@@ -78,7 +78,7 @@ export function SidebarUserNav({ user }: { user: User }) {
                 setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
               }
             >
-              {`Toggle ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
+              {`Alternar para o modo ${resolvedTheme === 'light' ? 'escuro' : 'claro'}`}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
@@ -90,7 +90,7 @@ export function SidebarUserNav({ user }: { user: User }) {
                     toast({
                       type: 'error',
                       description:
-                        'Checking authentication status, please try again!',
+                        'Verificando o status de autenticação, por favor tente novamente!',
                     });
 
                     return;
@@ -105,7 +105,7 @@ export function SidebarUserNav({ user }: { user: User }) {
                   }
                 }}
               >
-                {isGuest ? 'Login to your account' : 'Sign out'}
+                {isGuest ? 'Entrar na sua conta' : 'Sair'}
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>

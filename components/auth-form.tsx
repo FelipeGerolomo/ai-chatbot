@@ -1,12 +1,12 @@
-import Form from 'next/form';
+import Form from "next/form";
 
-import { Input } from './ui/input';
-import { Label } from './ui/label';
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 export function AuthForm({
   action,
   children,
-  defaultEmail = '',
+  defaultEmail = "",
 }: {
   action: NonNullable<
     string | ((formData: FormData) => void | Promise<void>) | undefined
@@ -21,7 +21,7 @@ export function AuthForm({
           htmlFor="email"
           className="font-normal text-zinc-600 dark:text-zinc-400"
         >
-          Email Address
+          E-mail
         </Label>
 
         <Input
@@ -42,7 +42,7 @@ export function AuthForm({
           htmlFor="password"
           className="font-normal text-zinc-600 dark:text-zinc-400"
         >
-          Password
+          Senha
         </Label>
 
         <Input
