@@ -76,7 +76,7 @@ export async function createGuestUser() {
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
-      'Failed to create guest user',
+      'Failed to create guest user'.concat(JSON.stringify(error)),
     );
   }
 }
