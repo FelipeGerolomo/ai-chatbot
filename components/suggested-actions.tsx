@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { memo } from 'react';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import type { VisibilityType } from './visibility-selector';
-import type { ChatMessage } from '@/lib/types';
-import { Suggestion } from './elements/suggestion';
+import { motion } from "framer-motion";
+import { memo } from "react";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { VisibilityType } from "./visibility-selector";
+import type { ChatMessage } from "@/lib/types";
+import { Suggestion } from "./elements/suggestion";
 
 interface SuggestedActionsProps {
   chatId: string;
-  sendMessage: UseChatHelpers<ChatMessage>['sendMessage'];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
   selectedVisibilityType: VisibilityType;
 }
 
@@ -18,7 +18,7 @@ function PureSuggestedActions({
   sendMessage,
   selectedVisibilityType,
 }: SuggestedActionsProps) {
-  const suggestedActions = [
+  const suggestedActions: any[] = [
     // 'What are the advantages of using Next.js?',
     // "Write code to demonstrate Dijkstra's algorithm",
     // 'Help me write an essay about Silicon Valley',
@@ -41,10 +41,10 @@ function PureSuggestedActions({
           <Suggestion
             suggestion={suggestedAction}
             onClick={(suggestion) => {
-              window.history.replaceState({}, '', `/chat/${chatId}`);
+              window.history.replaceState({}, "", `/chat/${chatId}`);
               sendMessage({
-                role: 'user',
-                parts: [{ type: 'text', text: suggestion }],
+                role: "user",
+                parts: [{ type: "text", text: suggestion }],
               });
             }}
             className="h-auto w-full whitespace-normal p-3 text-left"
@@ -65,5 +65,5 @@ export const SuggestedActions = memo(
       return false;
 
     return true;
-  },
+  }
 );
