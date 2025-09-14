@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { AuthForm } from "@/components/auth-form";
 import { SubmitButton } from "@/components/submit-button";
@@ -16,6 +16,7 @@ export default function Page() {
 
   const [email, setEmail] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const didRedirect = useRef(false);
 
   const [state, formAction] = useActionState<RegisterActionState, FormData>(
     register,
@@ -36,17 +37,30 @@ export default function Page() {
         type: "error",
         description: "Falha ao validar sua submissão!",
       });
-    } else if (state.status === "success") {
+    } else if (state.status === "success" && !didRedirect.current) {
       toast({ type: "success", description: "Conta criada com sucesso!" });
-
+      didRedirect.current = true;
       setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+
+      (async () => {
+        try {
+          await Promise.race([
+            updateSession(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("timeout")), 1500)
+            ),
+          ]);
+        } catch {
+          // ignore
+        } finally {
+          router.replace("/");
+        }
+      })();
     }
-  }, [state, router, updateSession]);
+  }, [state.status, router, updateSession]);
 
   const handleSubmit = (formData: FormData) => {
-    setEmail(formData.get("email") as string);
+    setEmail((formData.get("email") as string) ?? "");
     formAction(formData);
   };
 

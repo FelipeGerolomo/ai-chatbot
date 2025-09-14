@@ -1,51 +1,68 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
-import { toast } from '@/components/toast';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { toast } from "@/components/toast";
 
-import { AuthForm } from '@/components/auth-form';
-import { SubmitButton } from '@/components/submit-button';
+import { AuthForm } from "@/components/auth-form";
+import { SubmitButton } from "@/components/submit-button";
 
-import { login, type LoginActionState } from '../actions';
-import { useSession } from 'next-auth/react';
+import { login, type LoginActionState } from "../actions";
+import { useSession } from "next-auth/react";
 
 export default function Page() {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const didRedirect = useRef(false);
 
   const [state, formAction] = useActionState<LoginActionState, FormData>(
     login,
     {
-      status: 'idle',
-    },
+      status: "idle",
+    }
   );
 
   const { update: updateSession } = useSession();
 
   useEffect(() => {
-    if (state.status === 'failed') {
+    if (state.status === "failed") {
       toast({
-        type: 'error',
-        description: 'Credenciais inválidas, por favor tente novamente!',
+        type: "error",
+        description: "Credenciais inválidas, por favor tente novamente!",
       });
-    } else if (state.status === 'invalid_data') {
+    } else if (state.status === "invalid_data") {
       toast({
-        type: 'error',
-        description: 'Falha ao validar sua submissão!',
+        type: "error",
+        description: "Falha ao validar sua submissão!",
       });
-    } else if (state.status === 'success') {
+    } else if (state.status === "success" && !didRedirect.current) {
+      didRedirect.current = true;
       setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+
+      (async () => {
+        try {
+          // Best-effort session update without risking a loop or stall
+          await Promise.race([
+            updateSession(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("timeout")), 1500)
+            ),
+          ]);
+        } catch {
+          // ignore errors from updateSession
+        } finally {
+          // Navigate away once to avoid effect re-trigger loops
+          router.replace("/");
+        }
+      })();
     }
   }, [state.status, router, updateSession]);
 
   const handleSubmit = (formData: FormData) => {
-    setEmail(formData.get('email') as string);
+    setEmail((formData.get("email") as string) ?? "");
     formAction(formData);
   };
 
@@ -68,7 +85,7 @@ export default function Page() {
             >
               Criar uma conta
             </Link>
-            {' gratuitamente.'}
+            {" gratuitamente."}
           </p>
         </AuthForm>
       </div>
